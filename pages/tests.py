@@ -1,3 +1,15 @@
-from django.test import TestCase
+from django.test import SimpleTestCase
+from django.urls import reverse
 
-# Create your tests here.
+
+class HomePageTest(SimpleTestCase):
+
+    def setUp(self):
+        url = reverse('home')
+        self.response = self.client.get(url)
+
+    def testHomePageStatusCode(self):
+        self.assertEqual(self.response.status_code, 200)
+
+    def testHomePageTemplate(self):
+        self.assertTemplateUsed(self.response, 'home.html')
