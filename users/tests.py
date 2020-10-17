@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from .models import StudentGroup
 
 
 class CustomUserTests(TestCase):
@@ -21,7 +22,7 @@ class CustomUserTests(TestCase):
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_staff)
 
-    def test_create_superuser(self):
+    def testCreateSuperuser(self):
         User = get_user_model()
         admin_user = User.objects.create_superuser(
             username='testadmin',
@@ -33,3 +34,14 @@ class CustomUserTests(TestCase):
         self.assertTrue(admin_user.is_active)
         self.assertTrue(admin_user.is_staff)
         self.assertTrue(admin_user.is_superuser)
+
+
+class StudentGroupTest(TestCase):
+
+    def setUp(self):
+        StudentGroup.objects.create(name='test group123')
+
+    def testName(self):
+        group = StudentGroup.objects.get(id=1)
+        expected_group_name = f'{group}'
+        self.assertEqual(expected_group_name, 'test group123')
