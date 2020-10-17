@@ -4,15 +4,30 @@ from django.utils.translation import gettext_lazy as _
 
 
 class StudentGroup(models.Model):
-    name = models.CharField(unique=True, null=False, blank=False, max_length=255)
+    name = models.CharField(
+        unique=True,
+        null=False,
+        blank=False,
+        max_length=255
+    )
 
     def __str__(self):
         return self.name
 
 
 class CustomUser(AbstractUser):
-    index_number = models.CharField(max_length=6, unique=True, null=True, blank=True)
-    student_group = models.ForeignKey(StudentGroup, on_delete=models.SET_NULL, null=True, blank=True)
+    index_number = models.CharField(
+        max_length=6,
+        unique=True,
+        null=True,
+        blank=True
+    )
+    student_group = models.ForeignKey(
+        StudentGroup,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     A, B, C, D, E = 1, 2, 3, 4, 5
     SUB_GROUP = (
@@ -22,7 +37,12 @@ class CustomUser(AbstractUser):
         (D, _('D')),
         (E, _('E')),
     )
-    sub_group = models.PositiveSmallIntegerField(choices=SUB_GROUP, default=1, null=True, blank=True)
+    sub_group = models.PositiveSmallIntegerField(
+        choices=SUB_GROUP,
+        default=1,
+        null=True,
+        blank=True
+    )
 
 
 
