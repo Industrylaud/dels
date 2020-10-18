@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse, resolve
 from .models import StudentGroup
+from .forms import CustomUserCreationForm
+from .views import SignupPageView
 
 
 class CustomUserTests(TestCase):
@@ -36,7 +39,7 @@ class CustomUserTests(TestCase):
         self.assertTrue(admin_user.is_superuser)
 
 
-class StudentGroupTest(TestCase):
+class StudentGroupTests(TestCase):
 
     def setUp(self):
         StudentGroup.objects.create(name='test group123')
@@ -45,3 +48,24 @@ class StudentGroupTest(TestCase):
         group = StudentGroup.objects.get(id=1)
         expected_group_name = f'{group}'
         self.assertEqual(expected_group_name, 'test group123')
+
+
+class SignupPageTests(TestCase):
+
+    def setUp(self):
+        url = reverse('signup')
+        self.response = self.client.get(url)
+
+    def testSignupTemplate(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response, 'signup.html')
+
+    def testSignupForm(self):
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, CustomUserCreationForm)
+        self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+    def testSignupView(self):
+        view = resolve('/accounts/signup/')
+        self.assertEqual(view.func.__name__, SignupPageView.as_view().__name__)
+
