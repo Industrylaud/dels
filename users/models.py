@@ -17,7 +17,7 @@ class StudentGroup(models.Model):
 
 class CustomUser(AbstractUser):
     index_number = models.CharField(
-        max_length=6,
+        max_length=7,
         unique=True,
         null=True,
         blank=True
@@ -43,6 +43,12 @@ class CustomUser(AbstractUser):
         null=True,
         blank=True
     )
+    REQUIRED_FIELDS = [
+        'first_name',
+        'last_name',
+    ]
+    first_name = models.CharField(max_length=255, blank=False, null=True)
+    last_name = models.CharField(max_length=255, blank=False, null=True)
 
 
 
