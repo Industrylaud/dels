@@ -50,22 +50,25 @@ class StudentGroupTests(TestCase):
         self.assertEqual(expected_group_name, 'test group123')
 
 
-class SignupPageTests(TestCase):
+class SignupTests(TestCase):
+
+    username = 'testuser'
+    email = 'testuser@email.com'
 
     def setUp(self):
-        url = reverse('signup')
+        url = reverse('account_signup')
         self.response = self.client.get(url)
 
     def testSignupTemplate(self):
         self.assertEqual(self.response.status_code, 200)
-        self.assertTemplateUsed(self.response, 'signup.html')
+        self.assertTemplateUsed(self.response, 'account/signup.html')
 
     def testSignupForm(self):
-        form = self.response.context.get('form')
-        self.assertIsInstance(form, CustomUserCreationForm)
-        self.assertContains(self.response, 'csrfmiddlewaretoken')
-
-    def testSignupView(self):
-        view = resolve('/accounts/signup/')
-        self.assertEqual(view.func.__name__, SignupPageView.as_view().__name__)
-
+        new_user = get_user_model().objects.create_user(
+            self.username, self.email
+        )
+        self.assertEqual(get_user_model().objects.all().count(), 1)
+        self.assertEqual(get_user_model().objects.all()[0].username,
+                         self.username)
+        self.assertEqual(get_user_model().objects.all()[0].email,
+                         self.email)
