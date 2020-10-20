@@ -162,3 +162,5 @@ ACCOUNT_FORMS = {
     'signup': 'users.forms.CustomUserCreationForm'
 }
 
+ACCOUNT_SESSION_REMEMBER = True
+
