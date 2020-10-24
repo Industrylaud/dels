@@ -26,3 +26,14 @@ class CustomUserChangeForm(UserChangeForm):
             'student_group',
             'sub_group',
         )
+
+
+class UserProfileChangeForm(UserChangeForm):
+    class Meta:
+        model = get_user_model()
+        fields = (
+            'index_number',
+            'student_group',
+            'sub_group',
+            'email',
+        )

@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('accounts/password/change/', CustomPasswordChangeView.as_view()),
+    path('accounts/', include('users.urls')),
     path('accounts/', include('allauth.urls')),
 
     path('', include('pages.urls')),
