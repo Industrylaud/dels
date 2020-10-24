@@ -31,9 +31,9 @@
                     </li>
                     <li class="list-group-item">
                         <h3 class="mb-4">Student Data</h3>
-                        <p><b>Index number:</b>{{ object.index_number }}</p>
-                        <p><b>Student group:</b>{{ object.student_group }}</p>
-                        <p><b>Sub group:</b>{{ object.sub_group }}</p>
+                        <p><b>Index number: </b>{{ object.index_number }}</p>
+                        <p><b>Student group: </b>{{ object.student_group }}</p>
+                        <p><b>Sub group:</b> {{ object.get_sub_group_display }}</p>
                     </li>
                 </ul>
             </div>
