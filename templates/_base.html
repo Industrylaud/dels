@@ -32,7 +32,15 @@
 
                 {% if user.is_authenticated %}
                     {{ user.email }}
-                    <a class="btn btn-outline-danger ml-2" href="{% url 'account_logout' %}">Log Out</a>
+
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle ml-2" href="#" role="button" id="dropdownMenuLink"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'user_profile' %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'account_logout' %}">Log out</a>
+                        </div>
+                    </div>
                 {% else %}
                     <a class="btn btn-outline-secondary" href="{% url 'account_login' %}">Log In</a>
                     <a class="btn btn-outline-primary ml-2" href="{% url 'account_signup' %}">Sign Up</a>
