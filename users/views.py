@@ -1,8 +1,12 @@
+from django.contrib.auth.decorators import login_required
+
 from .models import CustomUser
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 from allauth.account.views import PasswordChangeView
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.shortcuts import get_object_or_404
 
 
@@ -16,15 +20,13 @@ class CustomPasswordChangeView(PasswordChangeView):
     success_url = reverse_lazy('home')
 
 
-class UserProfileView(UpdateView):
+class UserProfileView(LoginRequiredMixin, UpdateView):
     model = get_user_model()
     template_name = 'user_profile.html'
     queryset = CustomUser.objects.all()
 
     def get_object(self):
-        id_ = self.kwargs.get("username")
-        user = get_object_or_404(CustomUser, username=id_)
-        return user
+        return self.request.user
 
     fields = [
         'index_number',
