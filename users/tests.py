@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, resolve
 from .models import StudentGroup
+from .views import UserProfileView
 
 
 class CustomUserTests(TestCase):
@@ -70,3 +71,45 @@ class SignupTests(TestCase):
                          self.username)
         self.assertEqual(get_user_model().objects.all()[0].email,
                          self.email)
+
+
+class UserProfileTests(TestCase):
+
+    username = 'testuser'
+    email = 'test@email.pl'
+    first_name = 'johnny'
+    last_name = 'test'
+    password = 'testpass123'
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username=self.username,
+            email=self.email,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            password=self.password,
+        )
+        self.url = reverse('user_profile')
+
+    def testUserProfileStatusCode(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(self.url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def testUserProfileTemplate(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(self.url, follow=True)
+        self.assertTemplateUsed(response, 'user_profile.html')
+
+    def testUserProfileUrlResolveUserProfileView(self):
+        view = resolve('/accounts/profile/')
+        self.assertEqual(view.func.__name__, UserProfileView.as_view().__name__)
+
+    def testUserProfileContainsCorrectHtml(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(self.url, follow=True)
+        self.assertContains(response, self.username)
+        self.assertContains(response, self.email)
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.last_name)
