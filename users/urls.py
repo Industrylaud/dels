@@ -7,4 +7,5 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     path('profile/', views.UserProfileView.as_view(), name='user_profile'),
+    path('email_change/', views.CustomUserChangeEmailView.as_view(), name='email_change')
 ]

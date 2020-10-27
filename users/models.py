@@ -47,13 +47,10 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = [
         'first_name',
         'last_name',
+        'email',
     ]
     first_name = models.CharField(max_length=255, blank=False, null=True)
     last_name = models.CharField(max_length=255, blank=False, null=True)
 
     def get_absolute_url(self):
-        return reverse('user_profile', args=[str(self.username)])
-
-
-
-
+        return reverse('user_profile')
