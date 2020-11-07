@@ -17,3 +17,5 @@ class Post(models.Model):
 
     body = models.TextField()
     pub_date = models.DateTimeField('date_published')
+
+
