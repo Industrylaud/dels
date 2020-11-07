@@ -23,6 +23,7 @@ urlpatterns = [
     path('accounts/password/change/', CustomPasswordChangeView.as_view()),
     path('accounts/', include('users.urls')),
     path('accounts/', include('allauth.urls')),
+    path('groups/', include('groups.urls')),
 
     path('', include('pages.urls')),
 ]
