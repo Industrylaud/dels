@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 
 from users.models import StudentGroup
 
@@ -17,6 +18,9 @@ class Post(models.Model):
     body = models.TextField()
     pub_date = models.DateTimeField('date_published')
 
+    def get_absolute_url(self):
+        return reverse('student_group')
+
 
 class Comment(models.Model):
     post = models.ForeignKey(
@@ -30,3 +34,6 @@ class Comment(models.Model):
 
     body = models.TextField()
     pub_date = models.DateTimeField('date_published')
+
+    def get_absolute_url(self):
+        return reverse('student_group')
