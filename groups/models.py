@@ -7,9 +7,8 @@ from users.models import StudentGroup
 class Post(models.Model):
     student_group = models.ForeignKey(
         StudentGroup,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
-
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
@@ -19,3 +18,15 @@ class Post(models.Model):
     pub_date = models.DateTimeField('date_published')
 
 
+class Comment(models.Model):
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+    )
+
+    body = models.TextField()
+    pub_date = models.DateTimeField('date_published')
