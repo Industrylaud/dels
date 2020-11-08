@@ -4,7 +4,7 @@
 {% block title %}Group {{ user.student_group }}{% endblock %}
 
 {% block content %}
-        <form class="mt-4 mx-auto" style="width: 50%" method="post">
+        <form class="mt-4 mx-auto" style="width: 60%" method="post">
         {% csrf_token %}
             <div class="card">
 
@@ -22,7 +22,7 @@
         </form>
 
     {% for post in posts %}
-        <div class="card mt-3 mx-auto shadow-sm" style="width: 50%">
+        <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
             <div class="card-body pb-1">
                 <p>
                     <span class="card-title font-weight-bold">{{ post.author }}</span>
