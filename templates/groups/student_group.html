@@ -1,3 +1,33 @@
 {% extends '_base.html' %}
+{% load crispy_forms_tags %}
 
-{%  %}
+{% block title %}Group {{ user.student_group }}{% endblock %}
+
+{% block content %}
+        <form class="mt-4 mx-auto" style="width: 50%" method="post">
+        {% csrf_token %}
+            <div class="card">
+
+
+                <div class="card-body">
+                    <h5 class="card-title">Publish a post</h5>
+                    <textarea placeholder="You can write a post right there" class="form-control"
+                              type="text" id="body" name="body" required></textarea>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-primary float-right" type="submit">Publish</button>
+                </div>
+            </div>
+        </form>
+
+    {% for post in posts %}
+        <div class="card mt-3 mx-auto" style="width: 50%">
+            <div class="card-body">
+                <p class="card-title" style="font-weight: bold">{{ post.author }}</p>
+                <p>{{ post.body }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}

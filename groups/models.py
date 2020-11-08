@@ -16,7 +16,7 @@ class Post(models.Model):
     )
 
     body = models.TextField()
-    pub_date = models.DateTimeField('date_published')
+    pub_date = models.DateTimeField('date_published', auto_now_add=True)
 
     def get_absolute_url(self):
         return reverse('student_group')
