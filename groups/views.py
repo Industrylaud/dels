@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.views.generic.edit import CreateView
 
 from groups.models import Post, Comment
@@ -28,12 +29,18 @@ class PostView(LoginRequiredMixin, CreateView):
     fields = ['body', ]
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['post'] = Post.objects.get(id=int(self.kwargs['pk']))
-        context['comments'] = self.model.objects.filter(post_id=int(self.kwargs['pk'])).order_by('-pub_date')
-        return context
+        if Post.objects.get(id=int(self.kwargs['pk'])).student_group == self.request.user.student_group:
+            context = super().get_context_data(**kwargs)
+            context['post'] = Post.objects.get(id=int(self.kwargs['pk']))
+            context['comments'] = self.model.objects.filter(post_id=int(self.kwargs['pk'])).order_by('-pub_date')
+            return context
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.post = Post.objects.get(id=int(self.kwargs['pk']))
         return super().form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        if Post.objects.get(id=int(self.kwargs['pk'])).student_group == self.request.user.student_group:
+            return super().get(request, *args, **kwargs)
+        return redirect('student_group')
