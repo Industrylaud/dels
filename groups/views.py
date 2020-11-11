@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
 from django.views.generic.edit import CreateView
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
@@ -49,5 +48,3 @@ class PostView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         form.instance.post = Post.objects.get(id=int(self.kwargs['pk']))
         return super().form_valid(form)
-
-
