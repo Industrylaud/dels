@@ -36,5 +36,8 @@ class Comment(models.Model):
     body = models.TextField()
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
 
+    def __str__(self):
+        return self.body
+
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.post_id)])

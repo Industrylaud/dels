@@ -2,12 +2,17 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
-from django.db import models
+from groups.models import Post
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import StudentGroup
 
 
 CustomUser = get_user_model()
+
+
+class PostInLine(admin.TabularInline):
+    model = Post
+    extra = 0
 
 
 class CustomUsersInLine(admin.TabularInline):
@@ -33,6 +38,7 @@ class CustomUserAdmin(UserAdmin):
 class StudentGroupAdmin(admin.ModelAdmin):
     inlines = [
         CustomUsersInLine,
+        PostInLine,
     ]
     list_display = ('name',)
 

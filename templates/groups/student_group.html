@@ -4,7 +4,9 @@
 {% block title %}Group {{ user.student_group }}{% endblock %}
 
 {% block content %}
-        <form class="mt-4 mx-auto" style="width: 60%" method="post">
+    <div class="row">
+    <div class="col-7 mx-auto">
+        <form class="mt-4 mx-auto" method="post">
         {% csrf_token %}
             <div class="card">
                 <div class="card-body">
@@ -40,24 +42,42 @@
             </div>
         </form>
 
-    {% for post in posts %}
-        <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
-            <div class="card-body pb-1">
-                <p>
-                    <span class="card-title font-weight-bold">{{ post.author }}</span>
-                    <a href="{% url 'post_detail' post.pk %}" class="text-decoration-none font-weight-lighter text-muted float-right">
-                        {{ post.pub_date }}</a>
-                </p>
-                <hr>
-                <p>{{ post.body }}</p>
-                <hr>
-                <p>
-                    <span><a href="{{ post.get_absolute_url }}" class="text-decoration-none">Comment</a></span>
-                    <span class="float-right font-weight-lighter text-muted">
-                        Comments: {{ post.comments.all.count }}</span>
-                </p>
+        {% for post in posts %}
+            <div class="card mt-3 mx-auto shadow-sm">
+                <div class="card-body pb-1">
+                    <p>
+                        <span class="card-title font-weight-bold">{{ post.author }}</span>
+                        <a href="{% url 'post_detail' post.pk %}"
+                           class="text-decoration-none font-weight-lighter text-muted float-right">
+                            {{ post.pub_date }}</a>
+                    </p>
+                    <hr>
+                    <p>{{ post.body }}</p>
+                    <hr>
+                    <p>
+                        <span><a href="{% url 'post_detail' post.pk %}" class="text-decoration-none">Comment</a></span>
+                        <span class="float-right font-weight-lighter text-muted">
+                            Comments: {{ post.comments.all.count }}</span>
+                    </p>
+                </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+    <div class="col-3 mt-4">
+        {% for user in users %}
+            <div class="card">
+                <div class="card-header">
+                    <p class="card-title">Users list</p>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>{{ user.username }}</li>
+                    </ul>
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+    </div>
 
 {% endblock %}

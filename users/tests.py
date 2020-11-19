@@ -41,12 +41,11 @@ class CustomUserTests(TestCase):
 class StudentGroupTests(TestCase):
 
     def setUp(self):
-        StudentGroup.objects.create(name='test group123')
+        StudentGroup.objects.create(name='testgroup')
 
     def testName(self):
-        group = StudentGroup.objects.get(id=1)
-        expected_group_name = f'{group}'
-        self.assertEqual(expected_group_name, 'test group123')
+        expected_group_name = StudentGroup.objects.all()[0].name
+        self.assertEqual(expected_group_name, 'testgroup')
 
 
 class SignupTests(TestCase):

@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
 from django.shortcuts import get_object_or_404
@@ -10,12 +11,14 @@ class GroupView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'groups/student_group.html'
     fields = ['body', ]
+    user = get_user_model()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['posts'] = self.model.objects.filter(
             student_group=self.request.user.student_group
         ).order_by('-pub_date')
+        context['users'] = self.user.objects.filter(student_group=self.request.user.student_group)
         return context
 
     def form_valid(self, form):
