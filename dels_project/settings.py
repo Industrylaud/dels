@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'pages.apps.PagesConfig',
     'groups.apps.GroupsConfig',
+    'subjects.apps.SubjectsConfig',
 ]
 
 MIDDLEWARE = [
