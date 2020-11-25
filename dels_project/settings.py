@@ -162,3 +162,6 @@ ACCOUNT_FORMS = {
 
 ACCOUNT_SESSION_REMEMBER = True
 
+# static files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
