@@ -118,3 +118,15 @@ class TaskDone(models.Model):
         choices=STATUS,
         default=1,
     )
+
+
+class Resource(models.Model):
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        related_name='resources',
+    )
+    name = models.CharField(max_length=255)
+    body = models.TextField(max_length=4000)
+    pub_date = models.DateTimeField('date_published', auto_now_add=True)
+    file = models.FileField(upload_to=f"resources/{id}/", null=True, blank=True)
