@@ -67,6 +67,7 @@ class Task(models.Model):
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
     deadline = models.DateTimeField('date to end')
     body = models.TextField()
+    file = models.FileField(upload_to=f"tasks/{id}/", null=True, blank=True)
 
 
 class CommentTask(models.Model):
@@ -101,6 +102,7 @@ class TaskDone(models.Model):
     message = models.TextField(max_length=4000, null=True, blank=True)
     feedback = models.TextField(max_length=4000, null=True, blank=True)
     grade = models.CharField(max_length=100, null=True, blank=True)
+    file = models.FileField(upload_to=f"done_tasks/{id}/", null=True, blank=True)
 
     NotDone = 1
     Done = 2
