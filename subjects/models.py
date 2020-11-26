@@ -9,9 +9,6 @@ class Teacher(models.Model):
         on_delete=models.CASCADE,
     )
 
-    def __str__(self):
-        return get_user_model().username
-
 
 class Subject(models.Model):
     subject_name = models.CharField(max_length=255)
@@ -60,6 +57,7 @@ class CommentInSubject(models.Model):
 
 
 class Task(models.Model):
+    id = models.AutoField(primary_key=True)
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
@@ -67,7 +65,7 @@ class Task(models.Model):
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
     deadline = models.DateTimeField('date to end')
     body = models.TextField()
-    file = models.FileField(upload_to=f"tasks/{id}/", null=True, blank=True)
+    file = models.FileField(upload_to="tasks/", null=True, blank=True)
 
 
 class CommentTask(models.Model):
@@ -102,7 +100,7 @@ class TaskDone(models.Model):
     message = models.TextField(max_length=4000, null=True, blank=True)
     feedback = models.TextField(max_length=4000, null=True, blank=True)
     grade = models.CharField(max_length=100, null=True, blank=True)
-    file = models.FileField(upload_to=f"done_tasks/{id}/", null=True, blank=True)
+    file = models.FileField(upload_to="done_tasks/", null=True, blank=True)
 
     NotDone = 1
     Done = 2
@@ -129,4 +127,4 @@ class Resource(models.Model):
     name = models.CharField(max_length=255)
     body = models.TextField(max_length=4000)
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
-    file = models.FileField(upload_to=f"resources/{id}/", null=True, blank=True)
+    file = models.FileField(upload_to="resources/", null=True, blank=True)
