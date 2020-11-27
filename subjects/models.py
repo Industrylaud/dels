@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Teacher(models.Model):
@@ -9,8 +9,12 @@ class Teacher(models.Model):
         on_delete=models.CASCADE,
     )
 
+    def __str__(self):
+        return self.teacher.username
+
 
 class Subject(models.Model):
+    id = models.AutoField(primary_key=True)
     subject_name = models.CharField(max_length=255)
     teachers = models.ManyToManyField(Teacher)
     students = models.ManyToManyField(get_user_model())
@@ -65,7 +69,12 @@ class Task(models.Model):
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
     deadline = models.DateTimeField('date to end')
     body = models.TextField()
-    file = models.FileField(upload_to="tasks/", null=True, blank=True)
+
+    @property
+    def dir_name(self):
+        return f"{str(self.subject.id)}/{str(self.id)}/"
+
+    file = models.FileField(upload_to=f"tasks/{dir_name}", null=True, blank=True)
 
 
 class CommentTask(models.Model):
@@ -100,7 +109,14 @@ class TaskDone(models.Model):
     message = models.TextField(max_length=4000, null=True, blank=True)
     feedback = models.TextField(max_length=4000, null=True, blank=True)
     grade = models.CharField(max_length=100, null=True, blank=True)
-    file = models.FileField(upload_to="done_tasks/", null=True, blank=True)
+
+    @property
+    def dir_name(self):
+        return f"{self.task.subject.id}/{self.task.id}/{self.author.username}/"
+
+    file = models.FileField(
+        upload_to=f"done_tasks/{dir_name}", null=True, blank=True
+    )
 
     NotDone = 1
     Done = 2
@@ -119,6 +135,7 @@ class TaskDone(models.Model):
 
 
 class Resource(models.Model):
+    id = models.AutoField(primary_key=True)
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
@@ -127,4 +144,9 @@ class Resource(models.Model):
     name = models.CharField(max_length=255)
     body = models.TextField(max_length=4000)
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
-    file = models.FileField(upload_to="resources/", null=True, blank=True)
+
+    @property
+    def dir_name(self):
+        return f"{self.subject.id}/{self.id}/"
+
+    file = models.FileField(upload_to=f"resources/{dir_name}", null=True, blank=True)
