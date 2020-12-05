@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
@@ -39,6 +40,9 @@ class PostInSubject(models.Model):
 
     def __str__(self):
         return self.body
+
+    def get_absolute_url(self):
+        return reverse('teacher_subject', args=[str(self.subject_id)])
 
 
 class CommentInSubject(models.Model):
