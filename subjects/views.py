@@ -43,6 +43,5 @@ class TeacherTaskCreationView(LoginRequiredMixin, CreateView):
     template_name = 'subjects/teacher_tasks_creation.html'
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
         form.instance.subject = Subject.objects.get(id=int(self.kwargs['pk']))
         return super().form_valid(form)

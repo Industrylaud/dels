@@ -1,7 +1,14 @@
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+
+def dir_name(instance, filename):
+    idd = (str(instance.id))
+    return f"{idd}/{filename}"
 
 
 class Teacher(models.Model):
@@ -65,7 +72,7 @@ class CommentInSubject(models.Model):
 
 
 class Task(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False, unique=True)
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
@@ -74,11 +81,7 @@ class Task(models.Model):
     deadline = models.DateField('date to end')
     body = models.TextField()
 
-    @property
-    def dir_name(self):
-        return f"{str(self.subject.id)}/{str(self.id)}/"
-
-    file = models.FileField(upload_to=f"tasks/{dir_name}", null=True, blank=True)
+    file = models.FileField(upload_to=f"tasks/to_do/", null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('teacher_subject', args=[str(self.subject_id)])
@@ -103,6 +106,7 @@ class CommentTask(models.Model):
 
 
 class TaskDone(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False, unique=True)
     task = models.ForeignKey(
         Task,
         on_delete=models.CASCADE,
@@ -142,7 +146,7 @@ class TaskDone(models.Model):
 
 
 class Resource(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False, unique=True)
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
