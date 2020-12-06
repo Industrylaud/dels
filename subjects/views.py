@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView
 
+from .forms import TaskCreationForm
 from .models import PostInSubject, Task, Resource, Subject
 
 
@@ -29,6 +30,17 @@ class TeacherPostCreationView(LoginRequiredMixin, CreateView):
     fields = [
         'body',
     ]
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.subject = Subject.objects.get(id=int(self.kwargs['pk']))
+        return super().form_valid(form)
+
+
+class TeacherTaskCreationView(LoginRequiredMixin, CreateView):
+    model = Task
+    form_class = TaskCreationForm
+    template_name = 'subjects/teacher_tasks_creation.html'
 
     def form_valid(self, form):
         form.instance.author = self.request.user

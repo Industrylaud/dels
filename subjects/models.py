@@ -71,7 +71,7 @@ class Task(models.Model):
         on_delete=models.CASCADE,
     )
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
-    deadline = models.DateTimeField('date to end')
+    deadline = models.DateField('date to end')
     body = models.TextField()
 
     @property
@@ -79,6 +79,9 @@ class Task(models.Model):
         return f"{str(self.subject.id)}/{str(self.id)}/"
 
     file = models.FileField(upload_to=f"tasks/{dir_name}", null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('teacher_subject', args=[str(self.subject_id)])
 
 
 class CommentTask(models.Model):
