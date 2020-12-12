@@ -70,6 +70,12 @@ class CommentInSubject(models.Model):
     def __str__(self):
         return self.body
 
+    def get_absolute_url(self):
+        return reverse('post_detail_subject', args=[
+            str(self.post.subject_id),
+            str(self.post_id)
+        ])
+
 
 class Task(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False, unique=True)

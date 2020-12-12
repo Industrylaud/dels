@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -38,26 +39,34 @@ class TeacherPostCreationView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TeacherPostDetailView(LoginRequiredMixin, CreateView):
+class SubjectPostDetailView(LoginRequiredMixin, CreateView):
     model = CommentInSubject
-    template_name = 'subjects/teacher_post_detail.html'
+    template_name = 'subjects/subject_post_detail.html'
     fields = [
         'body',
     ]
 
     def get(self, request, *args, **kwargs):
-        post = get_object_or_404(PostInSubject, pk=int(self.kwargs['pk']))
-        if post.student_group == self.request.user.student_group:
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+
+        if get_object_or_404(subject.teachers, teacher=self.request.user) or \
+                get_object_or_404(subject.students, user=self.request.user):
             return super().get(request, *args, **kwargs)
+
         return HttpResponseForbidden()
 
     def get_context_data(self, **kwargs):
-        post = get_object_or_404(PostInSubject, pk=int(self.kwargs['pk']))
-        if post.student_group == self.request.user.student_group:
+        post = get_object_or_404(PostInSubject, pk=int(self.kwargs['id']))
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+        user = get_user_model()
+
+        if get_object_or_404(subject.teachers, teacher=self.request.user) or \
+                get_object_or_404(subject.students, user=self.request.user):
             context = super().get_context_data(**kwargs)
-            context['post'] = PostInSubject.objects.get(id=int(self.kwargs['pk']))
-            context['comments'] = self.model.objects.filter(post_id=int(self.kwargs['pk'])).order_by('-pub_date')
+            context['post'] = post
+            context['comments'] = self.model.objects.filter(post_id=int(self.kwargs['id'])).order_by('-pub_date')
             return context
+
         return HttpResponseForbidden()
 
     def form_valid(self, form):
