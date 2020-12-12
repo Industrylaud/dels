@@ -110,6 +110,12 @@ class CommentTask(models.Model):
     def __str__(self):
         return self.body
 
+    def get_absolute_url(self):
+        return reverse('task_detail_subject', args=[
+            str(self.task.subject_id),
+            str(self.task_id)
+        ])
+
 
 class TaskDone(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False, unique=True)
