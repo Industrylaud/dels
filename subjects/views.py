@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView
 
 from .forms import TaskCreationForm
-from .models import PostInSubject, Task, Resource, Subject
+from .models import PostInSubject, Task, Resource, Subject, CommentInSubject
 
 
 class TeacherSubjectView(LoginRequiredMixin, ListView):
@@ -34,6 +35,34 @@ class TeacherPostCreationView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.subject = Subject.objects.get(id=int(self.kwargs['pk']))
+        return super().form_valid(form)
+
+
+class TeacherPostDetailView(LoginRequiredMixin, CreateView):
+    model = CommentInSubject
+    template_name = 'subjects/teacher_post_detail.html'
+    fields = [
+        'body',
+    ]
+
+    def get(self, request, *args, **kwargs):
+        post = get_object_or_404(PostInSubject, pk=int(self.kwargs['pk']))
+        if post.student_group == self.request.user.student_group:
+            return super().get(request, *args, **kwargs)
+        return HttpResponseForbidden()
+
+    def get_context_data(self, **kwargs):
+        post = get_object_or_404(PostInSubject, pk=int(self.kwargs['pk']))
+        if post.student_group == self.request.user.student_group:
+            context = super().get_context_data(**kwargs)
+            context['post'] = PostInSubject.objects.get(id=int(self.kwargs['pk']))
+            context['comments'] = self.model.objects.filter(post_id=int(self.kwargs['pk'])).order_by('-pub_date')
+            return context
+        return HttpResponseForbidden()
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = PostInSubject.objects.get(id=int(self.kwargs['pk']))
         return super().form_valid(form)
 
 
