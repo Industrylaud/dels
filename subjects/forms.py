@@ -19,3 +19,15 @@ class TaskCreationForm(forms.ModelForm):
             'deadline': CustomDateTimeInput(),
             'body': forms.Textarea()
         }
+
+
+class ResourceCreationForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = [
+            'body',
+            'file',
+        ]
+        widgets = {
+            'body': forms.Textarea()
+        }

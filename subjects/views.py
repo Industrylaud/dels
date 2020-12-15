@@ -4,7 +4,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView
 
-from .forms import TaskCreationForm
+from .forms import TaskCreationForm, ResourceCreationForm
 from .models import PostInSubject, Task, Resource, Subject, CommentInSubject, CommentTask
 
 
@@ -118,4 +118,14 @@ class TaskDetailView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.task = Task.objects.get(id=self.kwargs['id'])
+        return super().form_valid(form)
+
+
+class TeacherResourceCreateView(LoginRequiredMixin, CreateView):
+    model = Resource
+    template_name = 'subjects/teacher_resource_creation.html'
+    form_class = ResourceCreationForm
+
+    def form_valid(self, form):
+        form.instance.subject = Subject.objects.get(id=int(self.kwargs['pk']))
         return super().form_valid(form)
