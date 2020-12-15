@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+
+{% block title %}Resource Deletion{% endblock %}
+
+{% block content %}
+    <h1>Deletion</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure</p>
+        <button class="btn btn-danger" type="submit">Delete!</button>
+    </form>
+{% endblock %}

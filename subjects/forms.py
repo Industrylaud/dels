@@ -1,6 +1,6 @@
 from django import forms
 
-from subjects.models import Task
+from subjects.models import Task, Resource
 
 
 class CustomDateTimeInput(forms.DateTimeInput):
@@ -23,7 +23,7 @@ class TaskCreationForm(forms.ModelForm):
 
 class ResourceCreationForm(forms.ModelForm):
     class Meta:
-        model = Task
+        model = Resource
         fields = [
             'body',
             'file',

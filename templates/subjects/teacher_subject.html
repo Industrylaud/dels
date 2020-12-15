@@ -24,6 +24,8 @@
                     href="{% url 'post_create_teacher' subject.pk %}">Publish a post</a>
                     <a class="btn btn-primary ml-1" type="button"
                     href="{% url 'task_create_teacher' subject.pk %}">Publish a task</a>
+                    <a class="btn btn-primary ml-1" type="button"
+                    href="{% url 'resource_create' subject.pk %}">Publish a resource</a>
                 </div>
             </div>
 
@@ -31,8 +33,9 @@
                 {% include 'subjects/teacher_posts.html' %}
 
                 {% include 'subjects/teacher_tasks.html' %}
+
+                {% include 'subjects/teacher_resources.html' %}
                 {% comment %}
-                    {% include teacher_resources.html %}
                     {% include teacher_video.html %}
                 {% endcomment %}
             </div>

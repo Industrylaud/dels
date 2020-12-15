@@ -9,4 +9,5 @@ urlpatterns = [
     path('<int:pk>/post_detail/<int:id>', SubjectPostDetailView.as_view(), name='post_detail_subject'),
     path('<int:pk>/task_detail/<uuid:id>', TaskDetailView.as_view(), name='task_detail_subject'),
     path('<int:pk>/resource_create', TeacherResourceCreateView.as_view(), name='resource_create'),
+    path('<int:pk>/resource_delete/<uuid:id>', TeacherResourceDeleteView.as_view(), name='resource_delete'),
 ]

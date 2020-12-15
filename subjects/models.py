@@ -167,9 +167,9 @@ class Resource(models.Model):
     name = models.CharField(max_length=255)
     body = models.TextField(max_length=4000)
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
+    file = models.FileField(upload_to=f"resources/", null=True, blank=True)
 
-    @property
-    def dir_name(self):
-        return f"{self.subject.id}/{self.id}/"
-
-    file = models.FileField(upload_to=f"resources/{dir_name}", null=True, blank=True)
+    def get_absolute_url(self):
+        return reverse('teacher_subject', args=[
+            str(self.subject_id)
+        ])

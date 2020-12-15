@@ -1,8 +1,8 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, CreateView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, DeleteView
 
 from .forms import TaskCreationForm, ResourceCreationForm
 from .models import PostInSubject, Task, Resource, Subject, CommentInSubject, CommentTask
@@ -58,7 +58,6 @@ class SubjectPostDetailView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         post = get_object_or_404(PostInSubject, pk=int(self.kwargs['id']))
         subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
-        user = get_user_model()
 
         if get_object_or_404(subject.teachers, teacher=self.request.user) or \
                 get_object_or_404(subject.students, user=self.request.user):
@@ -104,7 +103,6 @@ class TaskDetailView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         task = get_object_or_404(Task, pk=self.kwargs['id'])
         subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
-        user = get_user_model()
 
         if get_object_or_404(subject.teachers, teacher=self.request.user) or \
                 get_object_or_404(subject.students, user=self.request.user):
@@ -129,3 +127,13 @@ class TeacherResourceCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.subject = Subject.objects.get(id=int(self.kwargs['pk']))
         return super().form_valid(form)
+
+
+class TeacherResourceDeleteView(LoginRequiredMixin, DeleteView):
+    model = Resource
+    template_name = 'subjects/teacher_resource_delete.html'
+    pk_url_kwarg = 'id'
+
+    def get_success_url(self):
+        subject = self.object.subject
+        return reverse_lazy('teacher_subject', args=[str(subject.id)])
