@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+
+{% block title %}Tasks done{% endblock %}
+
+{% block content %}
+    {% for student in students %}
+        {% for done in tasks_done %}
+            {% if student.index is done.author.index %}
+                stud={{ student.index_number }} done={{ done.author.index_number }}
+                <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
+                    <div class="card-header bg-primary"></div>
+                    <div class="card-body pb-4">
+                        <p>
+                            <span class="card-title font-weight-bold">{{ done.author.first_name }} {{ done.author.last_name }}</span>
+                            <span class="text-decoration-none font-weight-lighter text-muted float-right">{{ done.pub_date }}</span>
+                        </p>
+                        <hr>
+                        <p>{{ done.message }}</p>
+                        {% if task.file %}
+                            <hr>
+                            <a href="{{ tasks_done.file.url }}">download done files</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    
+{% endblock %}

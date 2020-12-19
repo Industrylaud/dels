@@ -132,14 +132,7 @@ class TaskDone(models.Model):
     message = models.TextField(max_length=4000, null=True, blank=True)
     feedback = models.TextField(max_length=4000, null=True, blank=True)
     grade = models.CharField(max_length=100, null=True, blank=True)
-
-    @property
-    def dir_name(self):
-        return f"{self.task.subject.id}/{self.task.id}/{self.author.username}/"
-
-    file = models.FileField(
-        upload_to=f"done_tasks/{dir_name}", null=True, blank=True
-    )
+    file = models.FileField(upload_to=f"done_tasks/", null=True, blank=True)
 
     NotDone = 1
     Done = 2

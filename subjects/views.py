@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -5,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DeleteView
 
 from .forms import TaskCreationForm, ResourceCreationForm
-from .models import PostInSubject, Task, Resource, Subject, CommentInSubject, CommentTask
+from .models import PostInSubject, Task, Resource, Subject, CommentInSubject, CommentTask, TaskDone
 
 
 class TeacherSubjectView(LoginRequiredMixin, ListView):
@@ -137,3 +138,19 @@ class TeacherResourceDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         subject = self.object.subject
         return reverse_lazy('teacher_subject', args=[str(subject.id)])
+
+
+class TasksDoneListView(LoginRequiredMixin, ListView):
+    model = TaskDone
+    template_name = 'subjects/teacher_tasks_done.html'
+    user = get_user_model()
+    context_object_name = 'tasks_done'
+
+    def get_queryset(self):
+        return TaskDone.objects.filter(task_id=self.kwargs['id']).order_by('-pub_date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subject = Subject.objects.get(pk=int(self.kwargs['pk']))
+        context['students'] = subject.students.all()
+        return context
