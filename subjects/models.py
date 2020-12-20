@@ -137,17 +137,21 @@ class TaskDone(models.Model):
     NotDone = 1
     Done = 2
     ToEdit = 3
-
     STATUS = (
         (NotDone, _('Not done')),
         (Done, _('Done')),
         (ToEdit, _('To edit')),
     )
-
     status = models.SmallIntegerField(
         choices=STATUS,
         default=1,
     )
+
+    def get_absolute_url(self):
+        return reverse('task_done_list', args=[
+            str(Task.objects.get(id=self.task_id).subject_id),
+            str(self.task_id)
+        ])
 
 
 class Resource(models.Model):

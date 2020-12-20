@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DeleteView
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 
 from .forms import TaskCreationForm, ResourceCreationForm
 from .models import PostInSubject, Task, Resource, Subject, CommentInSubject, CommentTask, TaskDone
@@ -154,3 +154,25 @@ class TasksDoneListView(LoginRequiredMixin, ListView):
         subject = Subject.objects.get(pk=int(self.kwargs['pk']))
         context['students'] = subject.students.all()
         return context
+
+
+class TaskDoneTeacherEditView(LoginRequiredMixin, UpdateView):
+    model = TaskDone
+    template_name = 'subjects/teacher_task_done_.html'
+    fields = [
+        'grade',
+        'feedback',
+        'status'
+    ]
+    context_object_name = 'done'
+    pk_url_kwarg = 'id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['task_done'] = self.model.objects.get(id=self.kwargs['id'])
+        return context
+
+
+class TeacherCreateSubjectView(LoginRequiredMixin, CreateView):
+    model = Subject
+

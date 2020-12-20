@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Task done {{ done.author }}{% endblock %}
+
+{% block content %}
+    <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
+        <div class="card-header bg-primary"></div>
+        <div class="card-body pb-4">
+            <p>
+                <span class="card-title font-weight-bold">{{ done.author.first_name }} {{ done.author.last_name }}</span>
+                <span class="text-decoration-none font-weight-lighter text-muted float-right">{{ done.pub_date }}</span>
+            </p>
+            <hr>
+            <p>{{ done.message }}</p>
+            {% if task.file %}
+                <hr>
+                <a href="{{ tasks_done.file.url }}">download done files</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="post" class="mx-auto mt-2" style="width: 60%">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary mb-1">Approve</button>
+    </form>
+{% endblock %}
+
