@@ -12,5 +12,6 @@ urlpatterns = [
     path('teacher/task_done/<uuid:id>', TaskDoneTeacherEditView.as_view(), name='task_done_teacher_edit'),
     path('<int:pk>/teacher/resource_create', TeacherResourceCreateView.as_view(), name='resource_create'),
     path('<int:pk>/teacher/resource_delete/<uuid:id>', TeacherResourceDeleteView.as_view(), name='resource_delete'),
-    path('teacher/create_subject', TeacherCreateSubjectView.as_view(), name='subject_create_teacher')
+    path('teacher/create_subject', TeacherCreateSubjectView.as_view(), name='subject_create_teacher'),
+    path('<int:pk>/teacher/add_students', TeacherAddStudentsView.as_view(), name='teacher_add_students'),
 ]

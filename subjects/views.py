@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseForbidden
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView
+from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy, reverse
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView, FormView
 
-from .forms import TaskCreationForm, ResourceCreationForm
-from .models import PostInSubject, Task, Resource, Subject, CommentInSubject, CommentTask, TaskDone
+from users.models import StudentGroup
+from .forms import TaskCreationForm, ResourceCreationForm, StudentGroupAddForm
+from .models import PostInSubject, Task, Resource, Subject, CommentInSubject, CommentTask, TaskDone, Teacher
 
 
 class TeacherSubjectView(LoginRequiredMixin, ListView):
@@ -175,4 +176,35 @@ class TaskDoneTeacherEditView(LoginRequiredMixin, UpdateView):
 
 class TeacherCreateSubjectView(LoginRequiredMixin, CreateView):
     model = Subject
+    fields = ['subject_name']
+    template_name = 'subjects/teacher_subject_create.html'
 
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.save()
+        form.instance.teachers.add(Teacher.objects.get(teacher_id=self.request.user.id))
+        return super().form_valid(form)
+
+
+class TeacherAddStudentsView(LoginRequiredMixin, FormView):
+    form_class = StudentGroupAddForm
+    template_name = 'subjects/teacher_add_students.html'
+
+    def get_success_url(self):
+        subject = Subject.objects.get(pk=int(self.kwargs['pk']))
+        return reverse_lazy('teacher_subject', args=[str(subject.id)])
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+
+        if form.is_valid() and StudentGroup.objects.filter(name=form.data['group']).exists():
+            group = StudentGroup.objects.get(name=form.data['group'])
+            user = get_user_model()
+            subject = Subject.objects.get(pk=int(self.kwargs['pk']))
+            for student in user.objects.filter(student_group_id=group.id):
+                subject.students.add(student.id)
+                subject.save()
+
+            return HttpResponseRedirect(reverse('teacher_subject', args=[str(subject.id)]))
+
+        return render(request, self.template_name, {'form': form})

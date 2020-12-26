@@ -31,3 +31,7 @@ class ResourceCreationForm(forms.ModelForm):
         widgets = {
             'body': forms.Textarea()
         }
+
+
+class StudentGroupAddForm(forms.Form):
+    group = forms.CharField()

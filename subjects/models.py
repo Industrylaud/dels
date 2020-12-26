@@ -30,6 +30,9 @@ class Subject(models.Model):
     def __str__(self):
         return self.subject_name
 
+    def get_absolute_url(self):
+        return reverse('teacher_subject', args=[str(self.id)])
+
 
 class PostInSubject(models.Model):
     subject = models.ForeignKey(
@@ -170,3 +173,8 @@ class Resource(models.Model):
         return reverse('teacher_subject', args=[
             str(self.subject_id)
         ])
+
+
+class TeacherToSubject(models.Model):
+    teacher = models.ForeignKey('Teacher', related_name='subject_teachers', on_delete=models.CASCADE)
+    subject = models.ForeignKey('Subject', related_name='subject_teachers', on_delete=models.CASCADE)
