@@ -207,4 +207,4 @@ class TeacherAddStudentsView(LoginRequiredMixin, FormView):
 
             return HttpResponseRedirect(reverse('teacher_subject', args=[str(subject.id)]))
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'error_message': "wrong group"})

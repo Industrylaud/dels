@@ -5,6 +5,7 @@
 {% block title %}Add students{% endblock %}
 
 {% block content %}
+    <span>{{ error_message }}</span>
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
