@@ -8,12 +8,11 @@
                 {% if task.file %}
                     <a href="{{ task.file.url }}">download task files</a>
                 {% endif %}
-
             </div>
-        <div class="card-footer mt-3">
-            <a href="{% url 'teacher_task_detail_subject' subject.pk task.id %}" class="btn btn-primary" type="button">Comments</a>
-            <a href="{% url 'task_done_list' subject.pk task.id %}" class="btn btn-success" type="button">Returned tasks</a>
-        </div>
+
+            <div class="card-footer mt-3">
+                <a href="{% url 'task_detail_subject' subject.pk task.id %}" class="btn btn-primary" type="button">Details</a>
+            </div>
         </div>
     {% endfor %}
 

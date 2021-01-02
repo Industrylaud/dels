@@ -88,7 +88,7 @@ class TeacherTaskCreationView(LoginRequiredMixin, CreateView):
 
 class TeacherTaskDetailView(LoginRequiredMixin, CreateView):
     model = CommentTask
-    template_name = 'subjects/task_detail.html'
+    template_name = 'subjects/teacher_task_detail.html'
     fields = [
         'body',
     ]
@@ -258,4 +258,37 @@ class SubjectStudentPostDetailView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.post = PostInSubject.objects.get(id=int(self.kwargs['id']))
+        return super().form_valid(form)
+
+
+class StudentTaskDetailView(LoginRequiredMixin, CreateView):
+    model = CommentTask
+    template_name = 'subjects/student_task_detail.html'
+    fields = [
+        'body',
+    ]
+
+    def get(self, request, *args, **kwargs):
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+
+        if get_object_or_404(subject.students, id=self.request.user.id):
+            return super().get(request, *args, **kwargs)
+
+        return HttpResponseForbidden()
+
+    def get_context_data(self, **kwargs):
+        task = get_object_or_404(Task, pk=self.kwargs['id'])
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+
+        if get_object_or_404(subject.students, id=self.request.user.id):
+            context = super().get_context_data(**kwargs)
+            context['task'] = task
+            context['comments'] = self.model.objects.filter(task_id=self.kwargs['id']).order_by('-pub_date')
+            return context
+
+        return HttpResponseForbidden()
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.task = Task.objects.get(id=self.kwargs['id'])
         return super().form_valid(form)
