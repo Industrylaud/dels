@@ -1,0 +1,46 @@
+{% extends '_base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Post details{% endblock %}
+
+{% block content %}
+    <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
+        <div class="card-body pb-1">
+            <p>
+                <span class="card-title font-weight-bold">{{ post.author }}</span>
+                <span class="font-weight-lighter text-muted float-right">
+                    {{ post.pub_date }}</span>
+            </p>
+            <hr>
+            <p>{{ post.body }}</p>
+        </div>
+    </div>
+
+    <form method="post" class="mt-4 mx-auto" style="width: 60%">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Publish a comment</h5>
+                <textarea placeholder="You can write a comment right there" class="form-control"
+                          type="text" id="body" name="body" required></textarea>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary float-right" type="submit">Comment</button>
+            </div>
+        </div>
+    </form>
+
+    {% for comment in comments %}
+        <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
+        <div class="card-body pb-1">
+            <p>
+                <span class="font-weight-bold">{{ comment.author }}: </span>
+                <span class="text-mutex">
+                    {{ comment.body }}</span>
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

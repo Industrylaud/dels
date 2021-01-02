@@ -1,6 +1,14 @@
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+
+def dir_name(instance, filename):
+    idd = (str(instance.id))
+    return f"{idd}/{filename}"
 
 
 class Teacher(models.Model):
@@ -22,6 +30,9 @@ class Subject(models.Model):
     def __str__(self):
         return self.subject_name
 
+    def get_absolute_url(self):
+        return reverse('teacher_subject', args=[str(self.id)])
+
 
 class PostInSubject(models.Model):
     subject = models.ForeignKey(
@@ -39,6 +50,9 @@ class PostInSubject(models.Model):
 
     def __str__(self):
         return self.body
+
+    def get_absolute_url(self):
+        return reverse('teacher_subject', args=[str(self.subject_id)])
 
 
 class CommentInSubject(models.Model):
@@ -59,22 +73,27 @@ class CommentInSubject(models.Model):
     def __str__(self):
         return self.body
 
+    def get_absolute_url(self):
+        return reverse('post_detail_subject', args=[
+            str(self.post.subject_id),
+            str(self.post_id)
+        ])
+
 
 class Task(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False, unique=True)
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
     )
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
-    deadline = models.DateTimeField('date to end')
+    deadline = models.DateField('date to end')
     body = models.TextField()
 
-    @property
-    def dir_name(self):
-        return f"{str(self.subject.id)}/{str(self.id)}/"
+    file = models.FileField(upload_to=f"tasks/to_do/", null=True, blank=True)
 
-    file = models.FileField(upload_to=f"tasks/{dir_name}", null=True, blank=True)
+    def get_absolute_url(self):
+        return reverse('teacher_subject', args=[str(self.subject_id)])
 
 
 class CommentTask(models.Model):
@@ -94,8 +113,15 @@ class CommentTask(models.Model):
     def __str__(self):
         return self.body
 
+    def get_absolute_url(self):
+        return reverse('task_detail_subject', args=[
+            str(self.task.subject_id),
+            str(self.task_id)
+        ])
+
 
 class TaskDone(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False, unique=True)
     task = models.ForeignKey(
         Task,
         on_delete=models.CASCADE,
@@ -109,33 +135,30 @@ class TaskDone(models.Model):
     message = models.TextField(max_length=4000, null=True, blank=True)
     feedback = models.TextField(max_length=4000, null=True, blank=True)
     grade = models.CharField(max_length=100, null=True, blank=True)
-
-    @property
-    def dir_name(self):
-        return f"{self.task.subject.id}/{self.task.id}/{self.author.username}/"
-
-    file = models.FileField(
-        upload_to=f"done_tasks/{dir_name}", null=True, blank=True
-    )
+    file = models.FileField(upload_to=f"done_tasks/", null=True, blank=True)
 
     NotDone = 1
     Done = 2
     ToEdit = 3
-
     STATUS = (
         (NotDone, _('Not done')),
         (Done, _('Done')),
         (ToEdit, _('To edit')),
     )
-
     status = models.SmallIntegerField(
         choices=STATUS,
         default=1,
     )
 
+    def get_absolute_url(self):
+        return reverse('task_done_list', args=[
+            str(Task.objects.get(id=self.task_id).subject_id),
+            str(self.task_id)
+        ])
+
 
 class Resource(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False, unique=True)
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
@@ -144,9 +167,14 @@ class Resource(models.Model):
     name = models.CharField(max_length=255)
     body = models.TextField(max_length=4000)
     pub_date = models.DateTimeField('date_published', auto_now_add=True)
+    file = models.FileField(upload_to=f"resources/", null=True, blank=True)
 
-    @property
-    def dir_name(self):
-        return f"{self.subject.id}/{self.id}/"
+    def get_absolute_url(self):
+        return reverse('teacher_subject', args=[
+            str(self.subject_id)
+        ])
 
-    file = models.FileField(upload_to=f"resources/{dir_name}", null=True, blank=True)
+
+class TeacherToSubject(models.Model):
+    teacher = models.ForeignKey('Teacher', related_name='subject_teachers', on_delete=models.CASCADE)
+    subject = models.ForeignKey('Subject', related_name='subject_teachers', on_delete=models.CASCADE)

@@ -1,0 +1,18 @@
+<div class="tab-pane fade" id="v-pills-resources" role="tabpanel" aria-labelledby="v-pills-resources-tab">
+
+    {% for resource in resources %}
+        <div class="card mt-3 mx-auto shadow-sm">
+            <div class="card-body pb-1">
+                <p>{{ resource.body }}</p>
+                <hr>
+                {% if resource.file %}
+                    <a href="{{ resource.file.url }}">download task files</a>
+                {% endif %}
+            </div>
+        <div class="card-footer">
+            <a href="{% url 'resource_delete' subject.pk resource.id %}">Delete</a>
+        </div>
+        </div>
+    {% endfor %}
+
+</div>
