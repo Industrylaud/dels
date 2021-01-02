@@ -86,7 +86,7 @@ class TeacherTaskCreationView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TaskDetailView(LoginRequiredMixin, CreateView):
+class TeacherTaskDetailView(LoginRequiredMixin, CreateView):
     model = CommentTask
     template_name = 'subjects/task_detail.html'
     fields = [
