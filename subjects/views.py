@@ -41,7 +41,7 @@ class TeacherPostCreationView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class SubjectPostDetailView(LoginRequiredMixin, CreateView):
+class SubjectTeacherPostDetailView(LoginRequiredMixin, CreateView):
     model = CommentInSubject
     template_name = 'subjects/subject_post_detail.html'
     fields = [
@@ -52,7 +52,7 @@ class SubjectPostDetailView(LoginRequiredMixin, CreateView):
         subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
 
         if get_object_or_404(subject.teachers, teacher=self.request.user) or \
-                get_object_or_404(subject.students, user=self.request.user):
+                get_object_or_404(subject.students, id=self.request.user.id):
             return super().get(request, *args, **kwargs)
 
         return HttpResponseForbidden()
@@ -62,7 +62,7 @@ class SubjectPostDetailView(LoginRequiredMixin, CreateView):
         subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
 
         if get_object_or_404(subject.teachers, teacher=self.request.user) or \
-                get_object_or_404(subject.students, user=self.request.user):
+                get_object_or_404(subject.students, id=self.request.user.id):
             context = super().get_context_data(**kwargs)
             context['post'] = post
             context['comments'] = self.model.objects.filter(post_id=int(self.kwargs['id'])).order_by('-pub_date')
@@ -208,3 +208,54 @@ class TeacherAddStudentsView(LoginRequiredMixin, FormView):
             return HttpResponseRedirect(reverse('teacher_subject', args=[str(subject.id)]))
 
         return render(request, self.template_name, {'form': form, 'error_message': "wrong group"})
+
+
+class StudentSubjectView(LoginRequiredMixin, ListView):
+    template_name = 'subjects/student_subject.html'
+    context_object_name = 'posts'
+
+    def get_context_data(self, **kwargs):
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+        context = super().get_context_data(**kwargs)
+        if get_object_or_404(subject.students, id=self.request.user.id):
+            context['tasks'] = Task.objects.filter(subject_id=int(self.kwargs['pk'])).order_by('-pub_date')
+            context['resources'] = Resource.objects.filter(subject_id=int(self.kwargs['pk'])).order_by('-pub_date')
+            context['subject'] = subject
+            return context
+        return context
+
+    def get_queryset(self):
+        return PostInSubject.objects.filter(subject_id=int(self.kwargs['pk'])).order_by('-pub_date')
+
+
+class SubjectStudentPostDetailView(LoginRequiredMixin, CreateView):
+    model = CommentInSubject
+    template_name = 'subjects/subject_post_detail.html'
+    fields = [
+        'body',
+    ]
+
+    def get(self, request, *args, **kwargs):
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+
+        if get_object_or_404(subject.students, id=self.request.user.id):
+            return super().get(request, *args, **kwargs)
+
+        return HttpResponseForbidden()
+
+    def get_context_data(self, **kwargs):
+        post = get_object_or_404(PostInSubject, pk=int(self.kwargs['id']))
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+
+        if get_object_or_404(subject.students, id=self.request.user.id):
+            context = super().get_context_data(**kwargs)
+            context['post'] = post
+            context['comments'] = self.model.objects.filter(post_id=int(self.kwargs['id'])).order_by('-pub_date')
+            return context
+
+        return HttpResponseForbidden()
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = PostInSubject.objects.get(id=int(self.kwargs['id']))
+        return super().form_valid(form)
