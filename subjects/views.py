@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView, FormView
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView, FormView, TemplateView
 
 from users.models import StudentGroup
 from .forms import TaskCreationForm, ResourceCreationForm, StudentGroupAddForm
@@ -292,3 +292,51 @@ class StudentTaskDetailView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         form.instance.task = Task.objects.get(id=self.kwargs['id'])
         return super().form_valid(form)
+
+
+class StudentTaskDoneCreateView(LoginRequiredMixin, CreateView):
+    model = TaskDone
+    fields = [
+        'message',
+        'file'
+    ]
+    template_name = 'subjects/student_task_done_creation.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.task = Task.objects.get(id=self.kwargs['id'])
+        form.instance.status = 2
+        return super().form_valid(form)
+
+
+class StudentTaskDoneDetailsView(LoginRequiredMixin, TemplateView):
+    model = TaskDone
+    template_name = 'subjects/student_task_done_details.html'
+    context_object_name = 'task_done'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['task_done'] = TaskDone.objects.get(author__id=self.request.user.id, task__id=self.kwargs['id'])
+        return context
+
+
+class SubjectsListView(LoginRequiredMixin, ListView):
+    model = Subject
+    user = get_user_model()
+    context_object_name = 'subject_list'
+    template_name = 'subjects/subjects_list.html'
+
+    def get_queryset(self):
+        if Teacher.objects.filter(teacher_id=self.request.user.id):
+            return Subject.objects.filter(teachers=Teacher.objects.get(teacher_id=self.request.user.id))
+        return Subject.objects.filter(students=self.request.user)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if Teacher.objects.filter(teacher_id=self.request.user.id):
+            context['isTeacher'] = True
+            return context
+
+        context['isTeacher'] = False
+        return context

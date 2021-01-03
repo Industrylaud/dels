@@ -1,0 +1,29 @@
+{% extends '_base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Returned Task{% endblock %}
+
+{% block content %}
+    <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
+        <div class="card-body pb-4">
+            <p class="mb-5">
+                {% if task_done.grade != null %}
+                    <span class="card-title font-weight-bold">{{ task_done.grade }}</span>
+                {% endif %}
+                <span class="font-weight-lighter text-muted float-right">
+                    {{ task_done.pub_date }}
+                </span>
+            </p>
+            <hr>
+            <p>{{ task_done.message }}</p>
+            <hr>
+            {% if task_done.feedback != null %}
+            <p>{{ task_done.feedback }}</p>
+            {% endif %}
+            {% if task_done.file %}
+                <a href="{{ task_done.file.url }}">download task files</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

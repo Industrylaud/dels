@@ -1,0 +1,20 @@
+{% extends '_base.html' %}
+
+{% block title %}Subjects{% endblock %}
+
+{% block content %}
+    <div class="card-deck">
+        {% for subject in subject_list %}
+            <div class="card m-3" style="min-width:18rem; max-width:30.5%">
+                <div class="card-body">
+                    <h5 class="card-title">{{ subject.subject_name }}</h5>
+                    {% if isTeacher %}
+                        <a class="btn btn-primary" href="{% url 'teacher_subject' subject.id %}">Enter</a>
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'student_subject' subject.id %}">Enter</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
