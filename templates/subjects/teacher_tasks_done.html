@@ -5,10 +5,11 @@
 {% block content %}
     {% for student in students %}
         {% for done in tasks_done %}
-            {% if student.index is done.author.index %}
-                stud={{ student.index_number }} done={{ done.author.index_number }}
+            {% if done.author.index_number == student.index_number %}
                 <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
-                    <div class="card-header bg-primary"></div>
+                    <div class="card-header bg-primary">
+                        <span class="badge rounded-pill bg-success" style="font-size: 13pt">{{ done.grade }}</span>
+                    </div>
                     <div class="card-body pb-4">
                         <p>
                             <span class="card-title font-weight-bold">{{ done.author.first_name }} {{ done.author.last_name }}</span>
@@ -21,8 +22,19 @@
                             <a href="{{ tasks_done.file.url }}">download done files</a>
                         {% endif %}
                     </div>
+                    <div class="card-footer">
+                        <a class="btn btn-success" href="{% url 'task_done_teacher_edit' done.id %}">Check</a>
+                    </div>
                 </div>
             {% else %}
+                <div class="card mt-3 mx-auto shadow-sm" style="width: 60%">
+                    <div class="card-header bg-danger"></div>
+                    <div class="card-body pb-4">
+                        <p>
+                            <span class="card-title font-weight-bold">{{ student.first_name }} {{ student.last_name }}</span>
+                        </p>
+                    </div>
+                </div>
             {% endif %}
         {% endfor %}
     {% endfor %}

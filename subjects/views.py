@@ -159,7 +159,7 @@ class TasksDoneListView(LoginRequiredMixin, ListView):
 
 class TaskDoneTeacherEditView(LoginRequiredMixin, UpdateView):
     model = TaskDone
-    template_name = 'subjects/teacher_task_done_.html'
+    template_name = 'subjects/teacher_task_done_edit.html'
     fields = [
         'grade',
         'feedback',
@@ -167,6 +167,12 @@ class TaskDoneTeacherEditView(LoginRequiredMixin, UpdateView):
     ]
     context_object_name = 'done'
     pk_url_kwarg = 'id'
+
+    def get_success_url(self):
+        done = TaskDone.objects.get(id=self.kwargs['id'])
+        task = Task.objects.get(id=done.task_id)
+        subject = Subject.objects.get(id=task.subject_id)
+        return reverse_lazy('task_done_list', args=[str(subject.id), task.id])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -284,6 +290,10 @@ class StudentTaskDetailView(LoginRequiredMixin, CreateView):
             context = super().get_context_data(**kwargs)
             context['task'] = task
             context['comments'] = self.model.objects.filter(task_id=self.kwargs['id']).order_by('-pub_date')
+            if TaskDone.objects.filter(task_id=self.kwargs['id'], author_id=self.request.user.id).exists():
+                context['isDone'] = True
+            else:
+                context['isDone'] = False
             return context
 
         return HttpResponseForbidden()
