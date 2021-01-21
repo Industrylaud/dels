@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, FormView, TemplateView
 
+from calendars.models import add_event
 from users.models import StudentGroup
 from .forms import TaskCreationForm, ResourceCreationForm, StudentGroupAddForm
 from .models import PostInSubject, Task, Resource, Subject, CommentInSubject, CommentTask, TaskDone, Teacher
@@ -83,6 +84,12 @@ class TeacherTaskCreationView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.subject = Subject.objects.get(id=int(self.kwargs['pk']))
+        add_event(
+            subject_id=int(self.kwargs['pk']),
+            date=form.instance.deadline,
+            name=f'Task to do in {form.instance.subject.subject_name}',
+            body=form.instance.body
+        )
         return super().form_valid(form)
 
 

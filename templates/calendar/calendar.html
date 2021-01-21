@@ -1,0 +1,20 @@
+{% extends '_base.html' %}
+
+{% block title %}My calendar{% endblock %}
+
+{% block content %}
+    {% for subject_event in subject_events %}
+        {% for event in subject_event %}
+            <div class="card mt-5">
+                <div class="card-header text-center">
+                    <h3 class="card-title">{{ event.date }}</h3>
+                    <h5 class="text-center">{{ event.name }}</h5>
+                </div>
+                <div class="card-body">
+                    {{ event.body|truncatechars:"255" }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    
+{% endblock %}
