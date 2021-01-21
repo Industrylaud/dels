@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView, FormView
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView, FormView, TemplateView
 
 from users.models import StudentGroup
 from .forms import TaskCreationForm, ResourceCreationForm, StudentGroupAddForm
@@ -86,9 +86,9 @@ class TeacherTaskCreationView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TaskDetailView(LoginRequiredMixin, CreateView):
+class TeacherTaskDetailView(LoginRequiredMixin, CreateView):
     model = CommentTask
-    template_name = 'subjects/task_detail.html'
+    template_name = 'subjects/teacher_task_detail.html'
     fields = [
         'body',
     ]
@@ -159,7 +159,7 @@ class TasksDoneListView(LoginRequiredMixin, ListView):
 
 class TaskDoneTeacherEditView(LoginRequiredMixin, UpdateView):
     model = TaskDone
-    template_name = 'subjects/teacher_task_done_.html'
+    template_name = 'subjects/teacher_task_done_edit.html'
     fields = [
         'grade',
         'feedback',
@@ -167,6 +167,12 @@ class TaskDoneTeacherEditView(LoginRequiredMixin, UpdateView):
     ]
     context_object_name = 'done'
     pk_url_kwarg = 'id'
+
+    def get_success_url(self):
+        done = TaskDone.objects.get(id=self.kwargs['id'])
+        task = Task.objects.get(id=done.task_id)
+        subject = Subject.objects.get(id=task.subject_id)
+        return reverse_lazy('task_done_list', args=[str(subject.id), task.id])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -259,3 +265,88 @@ class SubjectStudentPostDetailView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         form.instance.post = PostInSubject.objects.get(id=int(self.kwargs['id']))
         return super().form_valid(form)
+
+
+class StudentTaskDetailView(LoginRequiredMixin, CreateView):
+    model = CommentTask
+    template_name = 'subjects/student_task_detail.html'
+    fields = [
+        'body',
+    ]
+
+    def get(self, request, *args, **kwargs):
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+
+        if get_object_or_404(subject.students, id=self.request.user.id):
+            return super().get(request, *args, **kwargs)
+
+        return HttpResponseForbidden()
+
+    def get_context_data(self, **kwargs):
+        task = get_object_or_404(Task, pk=self.kwargs['id'])
+        subject = get_object_or_404(Subject, pk=int(self.kwargs['pk']))
+
+        if get_object_or_404(subject.students, id=self.request.user.id):
+            context = super().get_context_data(**kwargs)
+            context['task'] = task
+            context['comments'] = self.model.objects.filter(task_id=self.kwargs['id']).order_by('-pub_date')
+            if TaskDone.objects.filter(task_id=self.kwargs['id'], author_id=self.request.user.id).exists():
+                context['isDone'] = True
+            else:
+                context['isDone'] = False
+            return context
+
+        return HttpResponseForbidden()
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.task = Task.objects.get(id=self.kwargs['id'])
+        return super().form_valid(form)
+
+
+class StudentTaskDoneCreateView(LoginRequiredMixin, CreateView):
+    model = TaskDone
+    fields = [
+        'message',
+        'file'
+    ]
+    template_name = 'subjects/student_task_done_creation.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.task = Task.objects.get(id=self.kwargs['id'])
+        form.instance.status = 2
+        return super().form_valid(form)
+
+
+class StudentTaskDoneDetailsView(LoginRequiredMixin, TemplateView):
+    model = TaskDone
+    template_name = 'subjects/student_task_done_details.html'
+    context_object_name = 'task_done'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['task_done'] = TaskDone.objects.get(author__id=self.request.user.id, task__id=self.kwargs['id'])
+        return context
+
+
+class SubjectsListView(LoginRequiredMixin, ListView):
+    model = Subject
+    user = get_user_model()
+    context_object_name = 'subject_list'
+    template_name = 'subjects/subjects_list.html'
+
+    def get_queryset(self):
+        if Teacher.objects.filter(teacher_id=self.request.user.id):
+            return Subject.objects.filter(teachers=Teacher.objects.get(teacher_id=self.request.user.id))
+        return Subject.objects.filter(students=self.request.user)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if Teacher.objects.filter(teacher_id=self.request.user.id):
+            context['isTeacher'] = True
+            return context
+
+        context['isTeacher'] = False
+        return context

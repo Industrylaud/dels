@@ -151,9 +151,8 @@ class TaskDone(models.Model):
     )
 
     def get_absolute_url(self):
-        return reverse('task_done_list', args=[
-            str(Task.objects.get(id=self.task_id).subject_id),
-            str(self.task_id)
+        return reverse('student_subject', args=[
+            str(Task.objects.get(id=self.task_id).subject_id)
         ])
 
 
