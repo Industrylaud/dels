@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'pages.apps.PagesConfig',
     'groups.apps.GroupsConfig',
     'subjects.apps.SubjectsConfig',
+    'calendars.apps.CalendarsConfig'
 ]
 
 MIDDLEWARE = [
